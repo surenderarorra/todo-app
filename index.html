@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ToDo App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  </head>
+    <style>
+        .mobile-view{
+            width: 50%;
+            min-height: 350px;
+        }
+    </style>
+  <body>
+
+    <div class="container-fluid min-vh-100 bg-primary bg-gradient d-flex justify-content-center align-items-center">
+            <div class=" w-75 m-auto bg-white p-3 rounded todos mobile-view">
+                <h1 class="py-2 text-center">Todo App</h1>
+                <div class="input d-flex gap-1 justify-content-center align-items-center">
+                    <input type="text" name="todo" id="todo" class="input-group fs-3 px-2" placeholder="Enter To Do">
+                    <button class="fs-3 border-0 px-3 py-1 bg-primary text-white d-flex justify-content-center align-items-center btn"> + </button>
+                </div>
+                <div class="w-100">
+                    <ul class="pt-4 fs-5 w-100 todo-list">
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            let input = document.getElementById("todo");
+            let btn = document.querySelector(".btn");
+            let ul = document.querySelector(".todo-list");
+            let listItem = [];
+        
+        const addTodo = (input) => {
+            let li = document.createElement("li");
+            li.innerHTML = `${input} <i class='bx bxs-trash dl text-danger'></i>`;
+            saveToLocal(input);
+            return li;
+        }
+
+        btn.addEventListener("click", () => {
+            ul.append(addTodo(input.value));
+            input.value = '';
+        })
+
+        ul.addEventListener("click", (e)=> {
+            if(e.target.classList[2] === "dl"){
+                e.target.parentElement.remove();
+                let dlt = e.target.parentElement.textContent
+                dlt = dlt.replaceAll(' ', '');
+                deleteItem(dlt);
+            }
+            
+        })
+
+        const deleteItem = (dlt) => {
+            let local = localStorage.getItem("test");
+            localStorage.removeItem("test", dlt);
+            let parseData = JSON.parse(local);
+
+            const newArr = parseData.filter((fil)=> {
+                return fil.item.replaceAll(' ', '') !== dlt
+            })
+            listItem = [];
+            newArr.map((mp) => {
+                addTodo(mp.item);
+            })
+        }
+
+        const saveToLocal = (input) => {
+            listItem.push({"item" : input});
+            let jsonData = JSON.stringify(listItem);
+            localStorage.setItem("test", jsonData)
+        }
+
+        const getLocal = () => {
+            if(localStorage.getItem("test")){
+                let local = localStorage.getItem("test");
+                let parseData = JSON.parse(local);
+                localStorage.removeItem("test");
+                parseData.map((mp) => {
+                ul.append(addTodo(mp.item));
+            })
+            }
+        }
+
+        getLocal();
+
+
+        
+    </script>
+  </body>
+</html>
